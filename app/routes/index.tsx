@@ -1,9 +1,11 @@
 import { useState } from "react";
-import { useLoaderData, LinksFunction, MetaFunction } from "remix";
-import data, { CovidRecord } from "../data";
-import { HiTrendingDown, HiTrendingUp, HiStop } from "react-icons/hi";
-import styles from "../styles/global.css";
+import { HiStop, HiTrendingDown, HiTrendingUp } from "react-icons/hi";
+import { LinksFunction, MetaFunction, useLoaderData } from "remix";
 import favicon from "../../assets/favicon.svg";
+import data, { CovidRecord } from "../data";
+import styles from "../styles/global.css";
+
+export let handle = { hydrate: true };
 
 export let meta: MetaFunction = () => {
   return {
@@ -26,6 +28,7 @@ export let links: LinksFunction = () => {
 export let loader = async () => {
   return await data();
 };
+
 const DAYS_TO_SHOW_VALUES = 42;
 
 export default () => {
@@ -106,7 +109,13 @@ export default () => {
           </td>
         </tr>
       );
-    });
+    })
+    .splice(0, limit);
+
+  const raiseLimit = () => {
+    setLimit(limit + DAYS_TO_SHOW_VALUES);
+  };
+
   return (
     <main>
       <h1>Covid Fälle in Gladbeck</h1>
@@ -120,26 +129,26 @@ export default () => {
           Kreis Recklinghausen
         </a>
       </h2>
-
-      {data.length > 0 ? (
-        <div>
-          <table>
-            <thead>
-              <tr>
-                <th>Datum</th>
-                <th>Inzidenz</th>
-                <th>Gemeldet</th>
-                <th>Genesen</th>
-                <th>Verstorben</th>
-                <th>Aktuell infiziert</th>
-              </tr>
-            </thead>
-            <tbody>{rows}</tbody>
-          </table>
-        </div>
-      ) : (
-        "Lade Daten..."
-      )}
+      <div>
+        <table>
+          <thead>
+            <tr>
+              <th>Datum</th>
+              <th>Inzidenz</th>
+              <th>Gemeldet</th>
+              <th>Genesen</th>
+              <th>Verstorben</th>
+              <th>Aktuell infiziert</th>
+            </tr>
+          </thead>
+          <tbody>{rows}</tbody>
+        </table>
+        {limit < data.length ? (
+          <button onClick={() => raiseLimit()}>Mehr...</button>
+        ) : (
+          ""
+        )}
+      </div>
     </main>
   );
 };

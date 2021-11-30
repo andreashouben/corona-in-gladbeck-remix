@@ -1,7 +1,10 @@
-import { Link } from "react-router-dom";
-import { Meta, Links, Outlet } from "remix";
+import { Links, Meta, Outlet, Scripts, useMatches } from "remix";
 
 export default function App() {
+  let matches = useMatches();
+
+  let includeScripts = matches.some((match) => match.handle?.hydrate);
+
   return (
     <html lang="de">
       <head>
@@ -11,6 +14,8 @@ export default function App() {
       </head>
       <body>
         <Outlet />
+
+        {includeScripts && <Scripts />}
       </body>
     </html>
   );
