@@ -3,7 +3,7 @@ import { useLoaderData, LinksFunction, MetaFunction } from "remix";
 import data, { CovidRecord } from "../data";
 import { HiTrendingDown, HiTrendingUp, HiStop } from "react-icons/hi";
 import styles from "../styles/global.css";
-import favicon from "./favicon.svg";
+import favicon from "../../assets/favicon.svg";
 
 export let meta: MetaFunction = () => {
   return {
