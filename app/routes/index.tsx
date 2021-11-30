@@ -7,7 +7,6 @@ import favicon from "../../assets/favicon.svg";
 
 export let meta: MetaFunction = () => {
   return {
-    charset: "utf-8",
     title: "Covid Fälle in Gladbeck",
     viewport: "width=device-width, initial-scale=1, shrink-to-fit=no",
     description: `Anzeige der Coronazahlen von Gladbeck, bereitgestellt vom Kreis Recklinghausen. Die Seite zeigt stellt die Zahlen textuell dar und gibt einen Überblick über die täglichen Veränderungen.`,

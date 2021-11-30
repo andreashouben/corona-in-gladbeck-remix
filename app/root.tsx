@@ -5,6 +5,7 @@ export default function App() {
   return (
     <html lang="de">
       <head>
+        <meta charSet="utf-8" />
         <Meta />
         <Links />
       </head>
