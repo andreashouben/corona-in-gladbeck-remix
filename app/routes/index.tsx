@@ -1,100 +1,151 @@
-import type { MetaFunction, LoaderFunction } from "remix";
-import { useLoaderData, json, Link } from "remix";
+import { useState } from "react";
+import { useLoaderData, LinksFunction, MetaFunction } from "remix";
+import data, { CovidRecord } from "../data";
+import { HiTrendingDown, HiTrendingUp, HiStop } from "react-icons/hi";
+import styles from "../styles/global.css";
+import favicon from "./favicon.svg";
 
-type IndexData = {
-  resources: Array<{ name: string; url: string }>;
-  demos: Array<{ name: string; to: string }>;
-};
-
-// Loaders provide data to components and are only ever called on the server, so
-// you can connect to a database or run any server side code you want right next
-// to the component that renders it.
-// https://remix.run/api/conventions#loader
-export let loader: LoaderFunction = () => {
-  let data: IndexData = {
-    resources: [
-      {
-        name: "Remix Docs",
-        url: "https://remix.run/docs"
-      },
-      {
-        name: "React Router Docs",
-        url: "https://reactrouter.com/docs"
-      },
-      {
-        name: "Remix Discord",
-        url: "https://discord.gg/VBePs6d"
-      }
-    ],
-    demos: [
-      {
-        to: "demos/actions",
-        name: "Actions"
-      },
-      {
-        to: "demos/about",
-        name: "Nested Routes, CSS loading/unloading"
-      },
-      {
-        to: "demos/params",
-        name: "URL Params and Error Boundaries"
-      }
-    ]
-  };
-
-  // https://remix.run/api/remix#json
-  return json(data);
-};
-
-// https://remix.run/api/conventions#meta
 export let meta: MetaFunction = () => {
   return {
-    title: "Remix Starter",
-    description: "Welcome to remix!"
+    title: "Covid Fälle in Gladbeck",
+    viewport: "width=device-width, initial-scale=1, shrink-to-fit=no",
+    description: `Anzeige der Coronazahlen von Gladbeck, bereitgestellt vom Kreis Recklinghausen. Die Seite zeigt stellt die Zahlen textuell dar und gibt einen Überblick über die täglichen Veränderungen.`,
   };
 };
 
-// https://remix.run/guides/routing#index-routes
-export default function Index() {
-  let data = useLoaderData<IndexData>();
+export let links: LinksFunction = () => {
+  return [
+    {
+      rel: "stylesheet",
+      href: styles,
+    },
+    { rel: "icon", href: favicon, type: "image/svg" },
+  ];
+};
+
+export let loader = async () => {
+  return await data();
+};
+const DAYS_TO_SHOW_VALUES = 42;
+
+export default () => {
+  const data: CovidRecord[] = useLoaderData();
+  const [limit, setLimit] = useState(DAYS_TO_SHOW_VALUES);
+
+  const diff = (
+    field: keyof Omit<CovidRecord, "date">,
+    curRow: CovidRecord,
+    nextRow: CovidRecord
+  ) => {
+    if (!nextRow) {
+      return 0;
+    }
+
+    const diff = curRow[field] - nextRow[field];
+    return diff > 0 ? `+${diff}` : diff;
+  };
+
+  const incidence = (id: number, data: CovidRecord[]) => {
+    const last7Days = data
+      .map((row) => row.confirmedCases)
+      .splice(id, 8)
+      .map((value, idx, array) => value - array[idx + 1])
+      .filter((val) => !isNaN(val))
+      .reduce((a, b) => a + b, 0);
+
+    return Number(((last7Days / 75600) * 100000).toFixed(1));
+  };
+
+  const trend = (cur: number, prev: number) =>
+    !cur || !prev ? (
+      ""
+    ) : cur - prev === 0 ? (
+      <HiStop color={"gray"} title="bleibt gleich" />
+    ) : cur - prev > 0 ? (
+      <HiTrendingUp color={"red"} title="steigt" />
+    ) : (
+      <HiTrendingDown color={"green"} title="sinkt" />
+    );
+
+  const rows = data
+    .map((row) => ({ ...row, date: new Date(row.date) }))
+    .map((row, index) => {
+      return (
+        <tr
+          style={{
+            backgroundColor: row.date.getDay() === 1 ? "aliceblue" : "none",
+          }}
+          key={row.date.getTime()}
+        >
+          <td style={{ textAlign: "right" }}>
+            {row.date.toLocaleDateString("de-DE", {
+              weekday: "short",
+              year: "2-digit",
+              month: "2-digit",
+              day: "2-digit",
+            })}
+          </td>
+          <td>
+            {incidence(index, data)}{" "}
+            {trend(incidence(index, data), incidence(index + 1, data))}
+          </td>
+          <td>
+            {row.confirmedCases} ({diff("confirmedCases", row, data[index + 1])}
+            )
+          </td>
+
+          <td>
+            {row.recovered} ({diff("recovered", row, data[index + 1])})
+          </td>
+          <td>
+            {row.deaths} ({diff("deaths", row, data[index + 1])})
+          </td>
+          <td>
+            {row.currentlyInfected} (
+            {diff("currentlyInfected", row, data[index + 1])})
+          </td>
+        </tr>
+      );
+    });
+
+  const raiseLimit = () => {
+    setLimit(limit + DAYS_TO_SHOW_VALUES);
+    console.log(limit);
+  };
 
   return (
-    <div className="remix__page">
-      <main>
-        <h2>Welcome to Remix!</h2>
-        <p>We're stoked that you're here. 🥳</p>
-        <p>
-          Feel free to take a look around the code to see how Remix does things,
-          it might be a bit different than what you’re used to. When you're
-          ready to dive deeper, we've got plenty of resources to get you
-          up-and-running quickly.
-        </p>
-        <p>
-          Check out all the demos in this starter, and then just delete the{" "}
-          <code>app/routes/demos</code> and <code>app/styles/demos</code>{" "}
-          folders when you're ready to turn this into your next project.
-        </p>
-      </main>
-      <aside>
-        <h2>Demos In This App</h2>
-        <ul>
-          {data.demos.map(demo => (
-            <li key={demo.to} className="remix__page__resource">
-              <Link to={demo.to} prefetch="intent">
-                {demo.name}
-              </Link>
-            </li>
-          ))}
-        </ul>
-        <h2>Resources</h2>
-        <ul>
-          {data.resources.map(resource => (
-            <li key={resource.url} className="remix__page__resource">
-              <a href={resource.url}>{resource.name}</a>
-            </li>
-          ))}
-        </ul>
-      </aside>
-    </div>
+    <main>
+      <h1>Covid Fälle in Gladbeck</h1>
+      <h2>
+        Quelle:{" "}
+        <a
+          href={
+            "https://www.kreis-re.de/dok/geoatlas/FME/CoStat/Diaggeskra-Gladbeck.html"
+          }
+        >
+          Kreis Recklinghausen
+        </a>
+      </h2>
+
+      {data.length > 0 ? (
+        <div>
+          <table>
+            <thead>
+              <tr>
+                <th>Datum</th>
+                <th>Inzidenz</th>
+                <th>Gemeldet</th>
+                <th>Genesen</th>
+                <th>Verstorben</th>
+                <th>Aktuell infiziert</th>
+              </tr>
+            </thead>
+            <tbody>{rows}</tbody>
+          </table>
+        </div>
+      ) : (
+        "Lade Daten..."
+      )}
+    </main>
   );
-}
+};
