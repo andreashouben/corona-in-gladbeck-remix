@@ -9,9 +9,7 @@ export let handle = { hydrate: true };
 
 export let meta: MetaFunction = () => {
   return {
-    title: "Covid Fälle in Gladbeck",
-    viewport: "width=device-width, initial-scale=1, shrink-to-fit=no",
-    description: `Anzeige der Coronazahlen von Gladbeck, bereitgestellt vom Kreis Recklinghausen. Die Seite zeigt stellt die Zahlen textuell dar und gibt einen Überblick über die täglichen Veränderungen.`,
+    title: "Covid Fälle in Gladbeck",    
   };
 };
 
