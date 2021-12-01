@@ -1,9 +1,15 @@
 import { useState } from "react";
 import { HiStop, HiTrendingDown, HiTrendingUp } from "react-icons/hi";
-import { LinksFunction, MetaFunction, useLoaderData } from "remix";
+import { LinksFunction, HeadersFunction, MetaFunction, useLoaderData } from "remix";
 import favicon from "../../assets/favicon.svg";
 import data, { CovidRecord } from "../data";
 import styles from "../styles/global.css";
+
+export const headers : HeadersFunction = () =>{
+  return{
+    "Cache-Control": "max-age=0, s-maxage=300, stale-while-revalidate=300"
+  }
+}
 
 export let handle = { hydrate: true };
 
