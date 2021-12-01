@@ -54,11 +54,13 @@ export default () => {
       .filter((val) => !isNaN(val))
       .reduce((a, b) => a + b, 0);
 
-    return Number(((last7Days / 75600) * 100000).toFixed(1));
+    return ((last7Days / 75600) * 100000).toFixed(1);
   };
 
-  const trend = (cur: number, prev: number) =>
-    !cur || !prev ? (
+  const trend = (current: string , previous: string) =>{
+  const cur = Number(current);
+  const prev = Number(previous);
+    return !cur || !prev ? (
       ""
     ) : cur - prev === 0 ? (
       <HiStop color={"gray"} title="bleibt gleich" />
@@ -66,7 +68,8 @@ export default () => {
       <HiTrendingUp color={"red"} title="steigt" />
     ) : (
       <HiTrendingDown color={"green"} title="sinkt" />
-    );
+    )
+  };
 
   const rows = data
     .map((row) => ({ ...row, date: new Date(row.date) }))
