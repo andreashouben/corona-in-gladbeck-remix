@@ -11,6 +11,7 @@ import data, { City, CovidRecord } from "../data"
 import styles from "../styles/global.css"
 import Trend from "../../components/trend"
 import { CITIES, POPULATION } from "~/static"
+import CitySelector from "../../components/citySelector"
 
 export const isCity = (value: any): value is City =>
   typeof value === "string" && CITIES.has(value as City)
@@ -132,34 +133,22 @@ export default () => {
   const raiseLimit = () => {
     setLimit(limit + DAYS_TO_SHOW_VALUES)
   }
-  const selectorRef = useRef<HTMLFormElement>(null)
 
   return (
     <main>
-      <h1>Covid Fälle in {city}</h1>
-      <Form ref={selectorRef} method="get" action="/">
-        <label>
-          Stadt auswählen&nbsp;
-          <select
-            name="city"
-            value={city}
-            onChange={() => selectorRef.current?.submit()}
-          >
-            <option>Gladbeck</option>
-            <option>Dorsten</option>
-          </select>
-        </label>
-      </Form>
-      <h2>
+      <h1>
+        Covid Fälle in
+        <br /> {city}
+      </h1>
+      <CitySelector currentCity={city} />
+      <h4>
         Quelle:{" "}
         <a
-          href={
-            "https://www.kreis-re.de/dok/geoatlas/FME/CoStat/Diaggeskra-Gladbeck.html"
-          }
+          href={`https://www.kreis-re.de/dok/geoatlas/FME/CoStat/Diaggeskra-${city}.html`}
         >
           Kreis Recklinghausen
         </a>
-      </h2>
+      </h4>
       <div>
         <table>
           <thead>
