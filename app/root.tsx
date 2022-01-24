@@ -1,9 +1,9 @@
-import { Links, Meta, Outlet, Scripts, useMatches } from "remix";
+import { Links, Meta, Outlet, Scripts, useMatches } from "remix"
 
 export default function App() {
-  let matches = useMatches();
+  let matches = useMatches()
 
-  let includeScripts = matches.some((match) => match.handle?.hydrate);
+  let includeScripts = matches.some((match) => match.handle?.hydrate)
 
   return (
     <html lang="de">
@@ -41,5 +41,5 @@ export default function App() {
         </footer>
       </body>
     </html>
-  );
+  )
 }

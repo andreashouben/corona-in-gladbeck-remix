@@ -1,23 +1,32 @@
-import { useState } from "react";
-import { HiStop, HiTrendingDown, HiTrendingUp } from "react-icons/hi";
-import { LinksFunction, HeadersFunction, MetaFunction, useLoaderData } from "remix";
-import favicon from "../../assets/favicon.svg";
-import data, { CovidRecord } from "../data";
-import styles from "../styles/global.css";
+import { useRef, useState } from "react"
+import {
+  Form,
+  HeadersFunction,
+  LinksFunction,
+  MetaFunction,
+  useLoaderData,
+} from "remix"
+import favicon from "../../assets/favicon.svg"
+import data, { CITIES, City, CovidRecord, POPULATION } from "../data"
+import styles from "../styles/global.css"
+import Trend from "../../components/trend"
 
-export const headers : HeadersFunction = () =>{
-  return{
-    "Cache-Control": "max-age=0, s-maxage=300, stale-while-revalidate=300"
+export const isCity = (value: any): value is City =>
+  typeof value === "string" && CITIES.has(value as City)
+
+export const headers: HeadersFunction = () => {
+  return {
+    "Cache-Control": "max-age=0, s-maxage=300, stale-while-revalidate=300",
   }
 }
 
-export let handle = { hydrate: true };
+export let handle = { hydrate: true }
 
 export let meta: MetaFunction = () => {
   return {
-    title: "Covid Fälle in Gladbeck",    
-  };
-};
+    title: "Covid Fälle in Gladbeck",
+  }
+}
 
 export let links: LinksFunction = () => {
   return [
@@ -26,56 +35,53 @@ export let links: LinksFunction = () => {
       href: styles,
     },
     { rel: "icon", href: favicon, type: "image/svg" },
-  ];
-};
+  ]
+}
 
-export let loader = async () => {
-  return await data();
-};
+type PageData = {
+  city: City
+  data: CovidRecord[]
+}
 
-const DAYS_TO_SHOW_VALUES = 42;
+export let loader = async ({ request }: { request: Request }) => {
+  const url = new URL(request.url)
+  const cityParam = url.searchParams.get("city") || "Gladbeck"
+  const city = isCity(cityParam) ? cityParam : "Gladbeck"
+  const d = await data()
+  return { city, data: d }
+}
+
+const DAYS_TO_SHOW_VALUES = 42
 
 export default () => {
-  const data: CovidRecord[] = useLoaderData();
-  const [limit, setLimit] = useState(DAYS_TO_SHOW_VALUES);
+  const { data, city } = useLoaderData<PageData>()
+
+  const [limit, setLimit] = useState(DAYS_TO_SHOW_VALUES)
 
   const diff = (
     field: keyof Omit<CovidRecord, "date">,
     curRow: CovidRecord,
-    nextRow: CovidRecord
+    nextRow: CovidRecord,
   ) => {
     if (!nextRow) {
-      return 0;
+      return 0
     }
 
-    const diff = curRow[field] - nextRow[field];
-    return diff > 0 ? `+${diff}` : diff;
-  };
+    const diff = curRow[field] - nextRow[field]
+    return diff > 0 ? `+${diff}` : diff
+  }
 
   const incidence = (id: number, data: CovidRecord[]) => {
+    const population = POPULATION[city]
     const last7Days = data
       .map((row) => row.confirmedCases)
       .splice(id, 8)
       .map((value, idx, array) => value - array[idx + 1])
       .filter((val) => !isNaN(val))
-      .reduce((a, b) => a + b, 0);
+      .reduce((a, b) => a + b, 0)
 
-    return ((last7Days / 75600) * 100000).toFixed(1);
-  };
-
-  const trend = (current: string , previous: string) =>{
-  const cur = Number(current);
-  const prev = Number(previous);
-    return !cur || !prev ? (
-      ""
-    ) : cur - prev === 0 ? (
-      <HiStop color={"gray"} title="bleibt gleich" />
-    ) : cur - prev > 0 ? (
-      <HiTrendingUp color={"red"} title="steigt" />
-    ) : (
-      <HiTrendingDown color={"green"} title="sinkt" />
-    )
-  };
+    return ((last7Days / population) * 100000).toFixed(1)
+  }
 
   const rows = data
     .map((row) => ({ ...row, date: new Date(row.date) }))
@@ -97,7 +103,10 @@ export default () => {
           </td>
           <td>
             {incidence(index, data)}{" "}
-            {trend(incidence(index, data), incidence(index + 1, data))}
+            <Trend
+              current={incidence(index, data)}
+              previous={incidence(index + 1, data)}
+            />
           </td>
           <td>
             {row.confirmedCases} ({diff("confirmedCases", row, data[index + 1])}
@@ -115,17 +124,33 @@ export default () => {
             {diff("currentlyInfected", row, data[index + 1])})
           </td>
         </tr>
-      );
+      )
     })
-    .splice(0, limit);
+    .splice(0, limit)
 
   const raiseLimit = () => {
-    setLimit(limit + DAYS_TO_SHOW_VALUES);
-  };
+    setLimit(limit + DAYS_TO_SHOW_VALUES)
+  }
+  const selectorRef = useRef<HTMLFormElement>(null)
+
+  console.log(city)
 
   return (
     <main>
-      <h1>Covid Fälle in Gladbeck</h1>
+      <h1>Covid Fälle in {city}</h1>
+      <Form ref={selectorRef} method="get" action="/">
+        <label>
+          Stadt/Kreis auswählen&nbsp;
+          <select
+            name="city"
+            value={city}
+            onChange={() => selectorRef.current?.submit()}
+          >
+            <option>Gladbeck</option>
+            <option>Dorsten</option>
+          </select>
+        </label>
+      </Form>
       <h2>
         Quelle:{" "}
         <a
@@ -157,5 +182,5 @@ export default () => {
         )}
       </div>
     </main>
-  );
-};
+  )
+}
