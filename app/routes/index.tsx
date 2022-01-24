@@ -127,17 +127,15 @@ export default () => {
         <br /> {city}
       </h1>
       <CitySelector currentCity={city} />
-      <h5 suppressHydrationWarning>
-        Einwohner: {CITIES[city].population.toLocaleString("de-DE")}
-      </h5>
-      <h4>
+      <h4>Einwohner: {CITIES[city].population.toLocaleString("de-DE")}</h4>
+      <h5>
         Quelle:{" "}
         <a
           href={`https://www.kreis-re.de/dok/geoatlas/FME/CoStat/Diaggeskra-${nameInSourceLink}.html`}
         >
           Kreis Recklinghausen
         </a>
-      </h4>
+      </h5>
       <div>
         <table>
           <thead>
