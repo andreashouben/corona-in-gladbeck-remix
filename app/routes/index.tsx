@@ -7,9 +7,10 @@ import {
   useLoaderData,
 } from "remix"
 import favicon from "../../assets/favicon.svg"
-import data, { CITIES, City, CovidRecord, POPULATION } from "../data"
+import data, { City, CovidRecord } from "../data"
 import styles from "../styles/global.css"
 import Trend from "../../components/trend"
+import { CITIES, POPULATION } from "~/static"
 
 export const isCity = (value: any): value is City =>
   typeof value === "string" && CITIES.has(value as City)
@@ -133,14 +134,12 @@ export default () => {
   }
   const selectorRef = useRef<HTMLFormElement>(null)
 
-  console.log(city)
-
   return (
     <main>
       <h1>Covid Fälle in {city}</h1>
       <Form ref={selectorRef} method="get" action="/">
         <label>
-          Stadt/Kreis auswählen&nbsp;
+          Stadt auswählen&nbsp;
           <select
             name="city"
             value={city}
