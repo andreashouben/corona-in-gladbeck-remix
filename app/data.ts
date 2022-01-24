@@ -1,6 +1,7 @@
 import axios from "axios"
 import { parse } from "node-html-parser"
 import requireFromString from "require-from-string"
+import { CITIES, CityName } from "~/static"
 
 export type CovidRecord = {
   date: Date
@@ -10,25 +11,11 @@ export type CovidRecord = {
   currentlyInfected: number
 }
 
-export type City =
-  | "Castrop-Rauxel"
-  | "Datteln"
-  | "Dorsten"
-  | "Gladbeck"
-  | "Haltern am See"
-  | "Herten"
-  | "Marl"
-  | "Oer-Erkenschwick"
-  | "Recklinghausen"
-  | "Waltrop"
+export default async (city: CityName = "Gladbeck") => {
+  const { nameInSourceLink } = CITIES[city]
 
-export type PopulationPerCity = {
-  [K in City]: number
-}
-
-export default async (city: City = "Gladbeck") => {
   const response = await axios.get(
-    `https://www.kreis-re.de/dok/geoatlas/FME/CoStat/Diaggeskra-${city}.html`,
+    `https://www.kreis-re.de/dok/geoatlas/FME/CoStat/Diaggeskra-${nameInSourceLink}.html`,
   )
 
   const page: string = response.data

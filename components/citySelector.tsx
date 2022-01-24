@@ -1,31 +1,27 @@
 import { Form } from "remix"
 import { useRef } from "react"
-import { City } from "~/data"
-import { CITIES } from "~/static"
+import { CITIES, CityName } from "~/static"
 
 type CitySelectorProps = {
-  currentCity: City
+  currentCity: CityName
 }
 
 const CitySelector = ({ currentCity }: CitySelectorProps) => {
   const selectorRef = useRef<HTMLFormElement>(null)
 
-  const options = Array.from(CITIES).map((city) => (
+  const options = Object.keys(CITIES).map((city) => (
     <option key={city}>{city}</option>
   ))
 
   return (
     <Form ref={selectorRef} method="get" action="/">
       <label>
-        Stadt auswählen&nbsp;
-        <select
-          name="city"
-          value={currentCity}
-          onChange={() => selectorRef.current?.submit()}
-        >
+        Stadt auswählen:&nbsp;
+        <select name="city" defaultValue={currentCity}>
           {options}
         </select>
       </label>
+      <input type="submit" />
     </Form>
   )
 }

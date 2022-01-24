@@ -26,7 +26,6 @@ export default function App() {
       <body>
         <Outlet />
 
-        {includeScripts && <Scripts />}
         <footer>
           <div>
             Favicon by{" "}

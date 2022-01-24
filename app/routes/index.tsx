@@ -1,4 +1,3 @@
-import { useState } from "react"
 import {
   HeadersFunction,
   LinksFunction,
@@ -6,14 +5,11 @@ import {
   useLoaderData,
 } from "remix"
 import favicon from "../../assets/favicon.svg"
-import data, { City, CovidRecord } from "../data"
+import data, { CovidRecord } from "../data"
 import styles from "../styles/global.css"
 import Trend from "../../components/trend"
-import { CITIES, POPULATION } from "~/static"
+import { CITIES, CityName, isCity } from "~/static"
 import CitySelector from "../../components/citySelector"
-
-export const isCity = (value: any): value is City =>
-  typeof value === "string" && CITIES.has(value as City)
 
 export const headers: HeadersFunction = () => {
   return {
@@ -40,7 +36,7 @@ export let links: LinksFunction = () => {
 }
 
 type PageData = {
-  city: City
+  city: CityName
   data: CovidRecord[]
 }
 
@@ -48,16 +44,13 @@ export let loader = async ({ request }: { request: Request }) => {
   const url = new URL(request.url)
   const cityParam = url.searchParams.get("city") || "Gladbeck"
   const city = isCity(cityParam) ? cityParam : "Gladbeck"
-  const d = await data()
+  const d = await data(city)
   return { city, data: d }
 }
 
-const DAYS_TO_SHOW_VALUES = 42
-
 export default () => {
   const { data, city } = useLoaderData<PageData>()
-
-  const [limit, setLimit] = useState(DAYS_TO_SHOW_VALUES)
+  const { population, nameInSourceLink } = CITIES[city]
 
   const diff = (
     field: keyof Omit<CovidRecord, "date">,
@@ -73,7 +66,6 @@ export default () => {
   }
 
   const incidence = (id: number, data: CovidRecord[]) => {
-    const population = POPULATION[city]
     const last7Days = data
       .map((row) => row.confirmedCases)
       .splice(id, 8)
@@ -127,11 +119,6 @@ export default () => {
         </tr>
       )
     })
-    .splice(0, limit)
-
-  const raiseLimit = () => {
-    setLimit(limit + DAYS_TO_SHOW_VALUES)
-  }
 
   return (
     <main>
@@ -140,10 +127,13 @@ export default () => {
         <br /> {city}
       </h1>
       <CitySelector currentCity={city} />
+      <h5 suppressHydrationWarning>
+        Einwohner: {CITIES[city].population.toLocaleString("de-DE")}
+      </h5>
       <h4>
         Quelle:{" "}
         <a
-          href={`https://www.kreis-re.de/dok/geoatlas/FME/CoStat/Diaggeskra-${city}.html`}
+          href={`https://www.kreis-re.de/dok/geoatlas/FME/CoStat/Diaggeskra-${nameInSourceLink}.html`}
         >
           Kreis Recklinghausen
         </a>
@@ -162,11 +152,6 @@ export default () => {
           </thead>
           <tbody>{rows}</tbody>
         </table>
-        {limit < data.length ? (
-          <button onClick={() => raiseLimit()}>Mehr...</button>
-        ) : (
-          ""
-        )}
       </div>
     </main>
   )
