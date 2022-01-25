@@ -64,4 +64,5 @@ export default async (city: CityName = "Gladbeck") => {
       (a: CovidRecord, b: CovidRecord) => a.date.getTime() - b.date.getTime(),
     )
     .reverse()
+    .slice(0, 42)
 }
