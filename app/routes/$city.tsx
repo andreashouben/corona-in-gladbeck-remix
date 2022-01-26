@@ -68,12 +68,15 @@ export default () => {
     curRow: CovidRecord,
     nextRow: CovidRecord,
   ) => {
+    let diff
     if (!nextRow) {
-      return 0
+      diff = "(0)"
+    } else {
+      diff = curRow[field] - nextRow[field]
+      diff = diff > 0 ? `+${diff}` : diff
     }
 
-    const diff = curRow[field] - nextRow[field]
-    return diff > 0 ? `+${diff}` : diff
+    return `${curRow[field]} (${diff})`
   }
 
   const incidence = (id: number, data: CovidRecord[]) => {
@@ -112,20 +115,18 @@ export default () => {
               previous={incidence(index + 1, data)}
             />
           </td>
-          <td>
-            {row.confirmedCases} ({diff("confirmedCases", row, data[index + 1])}
-            )
-          </td>
+          <td>{diff("confirmedCases", row, data[index + 1])}</td>
 
           <td>
-            {row.recovered} ({diff("recovered", row, data[index + 1])})
+            {row.recovered
+              ? diff("recovered", row, data[index + 1])
+              : "unbekannt"}
           </td>
+          <td>{diff("deaths", row, data[index + 1])}</td>
           <td>
-            {row.deaths} ({diff("deaths", row, data[index + 1])})
-          </td>
-          <td>
-            {row.currentlyInfected} (
-            {diff("currentlyInfected", row, data[index + 1])})
+            {row.currentlyInfected
+              ? diff("currentlyInfected", row, data[index + 1])
+              : "unbekannt"}
           </td>
         </tr>
       )
