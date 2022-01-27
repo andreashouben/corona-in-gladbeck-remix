@@ -15,7 +15,7 @@ export const CITIES: Cities = {
   Herten: { population: 61_860, nameInSourceLink: "Herten" },
   Marl: { population: 84_312, nameInSourceLink: "Marl" },
   "Oer-Erkenschwick": {
-    population: 31_53,
+    population: 31_352,
     nameInSourceLink: "Oer-Erkenschwick",
   },
   Recklinghausen: { population: 110_705, nameInSourceLink: "Recklinghausen" },
