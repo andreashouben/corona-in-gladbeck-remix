@@ -20,11 +20,10 @@ export const headers: HeadersFunction = () => {
   }
 }
 
-export let handle = { hydrate: true }
-
-export let meta: MetaFunction = () => {
+export let meta: MetaFunction = ({ params }) => {
+  const city = CITIES[params.city as CityName]
   return {
-    title: "Covid Fälle in Gladbeck",
+    title: `Covid Fälle in ${city.displayName}`,
   }
 }
 
