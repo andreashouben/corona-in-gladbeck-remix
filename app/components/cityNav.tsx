@@ -1,10 +1,10 @@
 import { NavLink } from "remix"
 import { CITIES } from "~/static"
 
-const CitySelector = () => {
+const CityNav = () => {
   const links = Object.entries(CITIES)
     .sort()
-    .map(([citylink, meta], idx) => (
+    .map(([citylink, meta]) => (
       <li key={citylink}>
         <NavLink to={`/${citylink}`}>{meta.displayName}</NavLink>
       </li>
@@ -19,4 +19,4 @@ const CitySelector = () => {
     </label>
   )
 }
-export default CitySelector
+export default CityNav

@@ -8,11 +8,11 @@ import favicon from "../../assets/favicon.svg"
 import data, { CovidRecord } from "../data"
 import styles from "../styles/global.css"
 
-import { CITIES, CityName, isCity } from "~/static"
+import { CITIES, CityName } from "~/static"
 
 import { Params } from "react-router"
 import Trend from "../components/trend"
-import CitySelector from "../components/citySelector"
+import CityNav from "../components/cityNav"
 
 export const headers: HeadersFunction = () => {
   return {
@@ -72,7 +72,7 @@ export default () => {
   ) => {
     let diff
     if (!nextRow) {
-      diff = "(0)"
+      diff = "0"
     } else {
       diff = curRow[field] - nextRow[field]
       diff = diff > 0 ? `+${diff}` : diff
@@ -120,15 +120,13 @@ export default () => {
           <td>{diff("confirmedCases", row, data[index + 1])}</td>
 
           <td>
-            {row.recovered
-              ? diff("recovered", row, data[index + 1])
-              : "unbekannt"}
+            {row.recovered ? diff("recovered", row, data[index + 1]) : "-"}
           </td>
           <td>{diff("deaths", row, data[index + 1])}</td>
           <td>
             {row.currentlyInfected
               ? diff("currentlyInfected", row, data[index + 1])
-              : "unbekannt"}
+              : "-"}
           </td>
         </tr>
       )
@@ -140,7 +138,7 @@ export default () => {
         Covid Fälle in
         <br /> {displayName}
       </h1>
-      <CitySelector />
+      <CityNav />
       <h4>Einwohner: {population.toLocaleString(locale)}</h4>
       <h5>
         Quelle:{" "}
