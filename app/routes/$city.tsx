@@ -8,11 +8,11 @@ import favicon from "../../assets/favicon.svg"
 import data, { CovidRecord } from "../data"
 import styles from "../styles/global.css"
 
-import { CITIES, CityName, isCity } from "~/static"
+import { CITIES, CityName } from "~/static"
 
 import { Params } from "react-router"
-import Trend from "../../components/trend"
-import CitySelector from "../../components/citySelector.client"
+import Trend from "../components/trend"
+import CityNav from "../components/cityNav"
 
 export const headers: HeadersFunction = () => {
   return {
@@ -44,36 +44,41 @@ type PageData = {
   locale: string
 }
 
+const LOCALE_REGEXP = /[a-z]{2}-[A-Z]{2}/
 export let loader = async ({
   request,
   params,
 }: {
   request: Request
   params: Params
-}) => {
+}): Promise<PageData> => {
   const languageHeader = request.headers.get("Accept-Language") || "de-DE"
-  const locale = languageHeader.match(/[a-z]{2}-[A-Z]{2}/)
-  const cityParam = params.city
-  const city = isCity(cityParam) ? cityParam : "Gladbeck"
+
+  const locale = (languageHeader.match(LOCALE_REGEXP) || ["de-DE"])[0]
+  const city = (params.city as CityName) || "Gladbeck"
+
   const d = await data(city)
   return { city, data: d, locale }
 }
 
 export default () => {
   const { data, city, locale } = useLoaderData<PageData>()
-  const { population, nameInSourceLink } = CITIES[city]
+  const { population, displayName } = CITIES[city]
 
   const diff = (
     field: keyof Omit<CovidRecord, "date">,
     curRow: CovidRecord,
     nextRow: CovidRecord,
   ) => {
+    let diff
     if (!nextRow) {
-      return 0
+      diff = "0"
+    } else {
+      diff = curRow[field] - nextRow[field]
+      diff = diff > 0 ? `+${diff}` : diff
     }
 
-    const diff = curRow[field] - nextRow[field]
-    return diff > 0 ? `+${diff}` : diff
+    return `${curRow[field]} (${diff})`
   }
 
   const incidence = (id: number, data: CovidRecord[]) => {
@@ -112,20 +117,16 @@ export default () => {
               previous={incidence(index + 1, data)}
             />
           </td>
-          <td>
-            {row.confirmedCases} ({diff("confirmedCases", row, data[index + 1])}
-            )
-          </td>
+          <td>{diff("confirmedCases", row, data[index + 1])}</td>
 
           <td>
-            {row.recovered} ({diff("recovered", row, data[index + 1])})
+            {row.recovered ? diff("recovered", row, data[index + 1]) : "-"}
           </td>
+          <td>{diff("deaths", row, data[index + 1])}</td>
           <td>
-            {row.deaths} ({diff("deaths", row, data[index + 1])})
-          </td>
-          <td>
-            {row.currentlyInfected} (
-            {diff("currentlyInfected", row, data[index + 1])})
+            {row.currentlyInfected
+              ? diff("currentlyInfected", row, data[index + 1])
+              : "-"}
           </td>
         </tr>
       )
@@ -135,14 +136,14 @@ export default () => {
     <main>
       <h1>
         Covid Fälle in
-        <br /> {city}
+        <br /> {displayName}
       </h1>
-      <CitySelector />
-      <h4>Einwohner: {CITIES[city].population.toLocaleString(locale)}</h4>
+      <CityNav />
+      <h4>Einwohner: {population.toLocaleString(locale)}</h4>
       <h5>
         Quelle:{" "}
         <a
-          href={`https://www.kreis-re.de/dok/geoatlas/FME/CoStat/Diaggeskra-${nameInSourceLink}.html`}
+          href={`https://www.kreis-re.de/dok/geoatlas/FME/CoStat/Diaggeskra-${city}.html`}
         >
           Kreis Recklinghausen
         </a>

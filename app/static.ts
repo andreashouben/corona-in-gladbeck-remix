@@ -1,25 +1,25 @@
 type CityMetadata = {
   population: number
-  nameInSourceLink: string
+  displayName: string
 }
 
 type Cities = {
   [K in CityName]: CityMetadata
 }
 export const CITIES: Cities = {
-  "Castrop-Rauxel": { population: 73_126, nameInSourceLink: "Castrop-Rauxel" },
-  Datteln: { population: 34_714, nameInSourceLink: "Datteln" },
-  Dorsten: { population: 74_515, nameInSourceLink: "Dorsten" },
-  Gladbeck: { population: 75_518, nameInSourceLink: "Gladbeck" },
-  "Haltern am See": { population: 37_845, nameInSourceLink: "Haltern_am_See" },
-  Herten: { population: 61_860, nameInSourceLink: "Herten" },
-  Marl: { population: 84_312, nameInSourceLink: "Marl" },
+  "Castrop-Rauxel": { population: 73_126, displayName: "Castrop-Rauxel" },
+  Datteln: { population: 34_714, displayName: "Datteln" },
+  Dorsten: { population: 74_515, displayName: "Dorsten" },
+  Gladbeck: { population: 75_518, displayName: "Gladbeck" },
+  Haltern_am_See: { population: 37_845, displayName: "Haltern am See" },
+  Herten: { population: 61_860, displayName: "Herten" },
+  Marl: { population: 84_312, displayName: "Marl" },
   "Oer-Erkenschwick": {
     population: 31_352,
-    nameInSourceLink: "Oer-Erkenschwick",
+    displayName: "Oer-Erkenschwick",
   },
-  Recklinghausen: { population: 110_705, nameInSourceLink: "Recklinghausen" },
-  Waltrop: { population: 29_472, nameInSourceLink: "Waltrop" },
+  Recklinghausen: { population: 110_705, displayName: "Recklinghausen" },
+  Waltrop: { population: 29_472, displayName: "Waltrop" },
 }
 
 export type CityName =
@@ -27,7 +27,7 @@ export type CityName =
   | "Datteln"
   | "Dorsten"
   | "Gladbeck"
-  | "Haltern am See"
+  | "Haltern_am_See"
   | "Herten"
   | "Marl"
   | "Oer-Erkenschwick"
