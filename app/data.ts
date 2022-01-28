@@ -1,7 +1,7 @@
 import axios from "axios"
 import { parse } from "node-html-parser"
 import requireFromString from "require-from-string"
-import { CITIES, CityName } from "~/static"
+import { CityName } from "~/static"
 
 export type CovidRecord = {
   date: Date
@@ -12,10 +12,8 @@ export type CovidRecord = {
 }
 
 export default async (city: CityName = "Gladbeck") => {
-  const { nameInSourceLink } = CITIES[city]
-
   const response = await axios.get(
-    `https://www.kreis-re.de/dok/geoatlas/FME/CoStat/Diaggeskra-${nameInSourceLink}.html`,
+    `https://www.kreis-re.de/dok/geoatlas/FME/CoStat/Diaggeskra-${city}.html`,
   )
 
   const page: string = response.data

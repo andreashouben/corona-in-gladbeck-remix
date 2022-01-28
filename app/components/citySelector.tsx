@@ -1,12 +1,12 @@
 import { NavLink } from "remix"
-import { CITIES, CityName } from "~/static"
+import { CITIES } from "~/static"
 
 const CitySelector = () => {
-  const links = Object.keys(CITIES)
+  const links = Object.entries(CITIES)
     .sort()
-    .map((city, idx) => (
-      <li key={city}>
-        <NavLink to={`/${city}`}>{city}</NavLink>
+    .map(([citylink, meta], idx) => (
+      <li key={citylink}>
+        <NavLink to={`/${citylink}`}>{meta.displayName}</NavLink>
       </li>
     ))
 
