@@ -147,6 +147,30 @@ export default () => {
           Kreis Recklinghausen
         </a>
       </h5>
+      <p
+        style={{
+          fontSize: "0.8em",
+        }}
+      >
+        <b>Achtung!</b> Aktuell sind die hier dargestellten Inzidenzen nicht
+        korrekt. Der Kreis liefert dem Landeszentrum Gesundheit NRW Altfälle
+        nach, die aufgrund von Überlastung bisher nicht erfasst wurden. Hierbei
+        wird nicht das tatsächliche Infektionsdatum, sondern das Eingangsdatum
+        beim LZG für die Statistik verwendet. Die tatsächlichen Inzidenzen
+        können
+        <a href="https://www.kreis-re.de/Inhalte/Buergerservice/Gesundheit_und_Ernaehrung/Infektionsschutz/Coronavirus.asp">
+          {" "}
+          hier{" "}
+        </a>
+        eingesehen werden. Näheres zu den Hintergründen in
+        <a
+          href="https://www.ruhrnachrichten.de/castrop-rauxel/coronafaelle-112-neuinfektionen-in-castrop-rauxel-und-ein-seltsamer-anstieg-w1727360-2000456976/"
+          target="_blank"
+        >
+          {" "}
+          diesem Artikel der Ruhrnachrichten.
+        </a>
+      </p>
       <div style={{ display: "flex", justifyContent: "center" }}>
         <table>
           <thead>
