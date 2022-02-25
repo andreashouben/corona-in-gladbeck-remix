@@ -96,6 +96,17 @@ nav ul{
     flex-wrap: wrap;
     justify-content: space-between;
 }
-nav ul li .active{
+nav ul li{
+  width: 33%;  
+  border-left: 1px solid gray;
+  height: 3em;
+}
+
+nav ul li:nth-child(3n-2){
+    border: none
+}
+
+
+nav ul li .active {
     font-weight: bold;
 }

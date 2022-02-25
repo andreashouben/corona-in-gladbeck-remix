@@ -18,6 +18,7 @@ export default function App() {
         <meta name="theme-color" content="#000000" />
         <Meta />
         <Links />
+      
       </head>
       <body>
         <Outlet />
