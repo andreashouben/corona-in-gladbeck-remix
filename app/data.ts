@@ -62,5 +62,12 @@ export default async (city: CityName = "Gladbeck") => {
       (a: CovidRecord, b: CovidRecord) => a.date.getTime() - b.date.getTime(),
     )
     .reverse()
+    .filter((el: CovidRecord, idx: number, arr: CovidRecord[]) => {
+      const next = arr[idx + 1]
+      if (next) {
+        return el.confirmedCases !== next.confirmedCases
+      }
+      return true
+    })
     .slice(0, 42)
 }
